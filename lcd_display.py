@@ -1,7 +1,8 @@
 import numpy as np
 import cv2
 
-num = 3
+num = 10
+digit_separation = 75
 
 
 def mat(digit):
@@ -13,7 +14,7 @@ def mat(digit):
         4: [[1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [0, 0, 1]],
         5: [[1, 1, 1], [1, 0, 0], [1, 1, 1], [0, 0, 1], [1, 1, 1]],
         6: [[1, 1, 1], [1, 0, 0], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
-        7: [[1, 1, 1], [0, 0, 1], [0, 0, 1], [0, 1, 0], [0, 1, 0]],
+        7: [[1, 1, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]],
         8: [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
         9: [[1, 1, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]]
     }
@@ -50,27 +51,34 @@ def create_digit_image(number):
     return dot_matrix_image
 
 
+def num_image(num):
+    # Splitting num into its component digits
+    digits = [int(d) for d in str(num)]
+
+    # Generating images for each digit
+    digit_images = [create_digit_image(digit) for digit in digits]
+
+
+    ending_space_img = np.zeros((300, digit_separation), dtype=np.uint8)
+    digit_images.append(ending_space_img)
+
+    # Combining images of component digits into a single image
+    combined_image = np.hstack(digit_images)
+
+    return combined_image
+
+
 def hanoi(dig):
     if dig == 0:
         return 1
     else:
         return 2 * hanoi(dig - 1) + 1
 
+
 num = hanoi(num)
-digit_separation = 75
+print(num)
 
-# Splitting num into its component digits
-digits = [int(d) for d in str(num)]
-
-# Generating images for each digit
-digit_images = [create_digit_image(digit) for digit in digits]
-
-
-ending_space_img = np.zeros((300, digit_separation), dtype=np.uint8)
-digit_images.append(ending_space_img)
-
-# Combining images of component digits into a single image
-combined_image = np.hstack(digit_images)
+combined_image = num_image(num)
 
 # Displaying the combined image
 cv2.imshow("Answer", combined_image)
